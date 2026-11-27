@@ -1,0 +1,203 @@
+\documentclass[11pt]{amsart}
+\usepackage[T1]{fontenc}
+\usepackage[margin=1.02in]{geometry}
+\DeclareFontShape{OT1}{cmr}{bx}{n}{<-> cmbx10}{}
+\DeclareMathSizes{8}{8}{8}{8}
+\DeclareMathSizes{9}{9}{8}{8}
+\DeclareMathSizes{10.95}{10.95}{8}{8}
+\newtheorem{theorem}{Theorem}
+\title{Boolean boundedness need not transfer to tropical Datalog}
+\date{November 27, 2026}
+\begin{document}
+\begin{abstract}
+A fixed linear monadic Datalog program stabilizes on every
+Boolean input by round two, yet needs arbitrarily many naive
+rounds over the nonnegative integer tropical semiring. Its
+short Boolean proof uses a guarded input fact twice on separate
+branches. This duplication can make it more expensive than a
+longer tropical proof. This answers the boundedness-transfer
+question of Fan, Koutris and Roy. A separate target-only example
+has a constant-depth Boolean circuit and worst-case tropical
+depth of order the square of a logarithm.
+\end{abstract}
+\maketitle
+
+\section{A three-rule program}
+Fan, Koutris and Roy \cite[Sec.~4, p.~93:10]{fkr} ask whether a
+program can be Boolean-bounded and unbounded over the tropical
+semiring. Boundedness means that naive synchronous evaluation of
+a designated intensional predicate reaches its final values in
+a fixed number of rounds independent of the finite database.
+We use the nonnegative integer tropical semiring
+\[
+      (\mathbb N\cup\{\infty\},\ \min,\ +,\ \infty,\ 0).
+\]
+A missing extensional fact has weight \(\infty\). Numeric zero
+is the weight of a present fact of multiplicative identity.
+Intensional facts start at the additive identity in round zero.
+Each round evaluates all rules using the preceding intensional
+values. Boolean evaluation similarly uses disjunction and
+conjunction with all intensional facts false in round zero.
+
+\begin{theorem}
+There is a fixed linear monadic program with acyclic rule bodies
+for which all intensional relations stabilize over Boolean inputs
+by round two. Its target requires arbitrarily many naive rounds
+over the nonnegative integer tropical semiring.
+\end{theorem}
+
+\begin{proof}
+Use unary extensional predicate \(G\), binary extensional
+predicate \(E\), and unary intensional predicates \(U,T\).
+The target is \(T\). The rules are
+\[
+\begin{aligned}
+ U(x)&\ \leftarrow\ G(x),\\
+ T(x)&\ \leftarrow\ G(x),U(x),\\
+ T(x)&\ \leftarrow\ G(x),E(x,y),T(y).
+\end{aligned}
+\]
+Each body has at most one intensional atom and is acyclic as a
+hypergraph. In the Boolean semiring \(U=G\) after round one.
+Every derivation of \(T(x)\) requires \(G(x)\), and the second
+rule derives exactly those facts by round two. Both relations
+have reached their final values, on every finite Boolean input.
+
+Over tropical weights take the directed path \(0\to1\to
+\cdots\to n\), where each edge is present with numeric weight
+zero. Let \(G(i)\) have weight \(w_i=3^{n-i}\). All finite
+derivations of \(T(i)\) follow the path to a stopping vertex
+\(j\ge i\), then use the second rule and expand \(U(j)\) by the
+first. Each such proof tree has height \(j-i+2\), with input
+leaves at height zero, and cost
+\[
+       C(i,j)=\sum_{k=i}^{j-1}w_k+2w_j .
+\]
+The two copies of \(G(j)\) occur on separate branches, one under
+\(U(j)\). No label repeats on a root-to-leaf path. Thus these
+are also tight proof trees in the source sense
+\cite[Sec.~2.4]{fkr}. By induction on round number, the round
+\(r\) value is the minimum cost among proof trees of height
+at most \(r\), with minimum of an empty set \(\infty\).
+The rule recurrence gives exactly the same statement.
+
+When \(j<n\), the drop in cost on extending the stopping vertex
+by one is \(w_j-2w_{j+1}=w_{j+1}>0\). Thus \(T(0)\) first
+attains its final value when the path reaches \(n\), in round
+\(n+2\). This goes to infinity with \(n\).
+\end{proof}
+
+For example, four edges give weights \(81,27,9,3,1\). At
+\(T(0)\) the successive finite values in rounds two through
+six are \(162,135,126,123,122\). All corresponding Boolean
+facts already stabilized by round two.
+
+Source Corollary~4.7 transfers Boolean boundedness to absorptive
+semirings with idempotent multiplication. Numeric addition in
+the tropical semiring is not idempotent. The second rule
+charges the two occurrences that Boolean conjunction absorbs.
+The theorem concerns naive rounds of a fixed program. Existing
+size-dependent convergence bounds for grounded systems are
+compatible \cite{frisk}.
+
+\section{Companion separation for circuit depth}
+A separate construction isolates circuit depth of a single
+target. Use binary extensional predicates \(F,E\) and binary
+intensional predicates \(W,R,P\), where \(P\) is the target:
+\[
+\begin{aligned}
+ W(x,y)&\ \leftarrow\ F(x,y),\\
+ R(x,y)&\ \leftarrow\ E(x,y),\\
+ R(x,y)&\ \leftarrow\ E(x,z),R(z,y),\\
+ P(x,y)&\ \leftarrow\ F(x,y),W(x,y),\\
+ P(x,y)&\ \leftarrow\ F(x,y),R(x,y).
+\end{aligned}
+\]
+Boolean \(P\) equals \(F\) from round two, and its provenance
+circuit for each target fact is a single input wire or a
+constant. Internal \(R\) need not be Boolean-bounded.
+
+In the tropical case \(R\) gives positive-length shortest-path
+cost, and the target is
+\[
+       P(x,y)=\min\{2F(x,y),\,F(x,y)+R(x,y)\}.
+\]
+Fix a complete directed structure on \(N\) vertices and a single
+\(F(s,t)\) fact, \(s\ne t\). Set its weight to one. Give each
+\(E\) fact weight zero for a selected edge and two otherwise,
+so the structure is fixed for all of these annotations.
+Then \(P(s,t)\) is one exactly when there is a selected directed
+path, and is two otherwise.
+
+Suppose a fan-in-two min-plus circuit computes \(P(s,t)\) for
+all annotations of this structure, with constants restricted
+to nonnegative integers or \(\infty\). For each gate output
+\(z\), keep the Boolean tests \(B_0(z)=[z\le0]\) and
+\(B_1(z)=[z\le1]\). At a minimum gate each test is an OR. At
+an addition gate with children \(a,b\), the tests are
+\[
+ B_0(a)\land B_0(b),\qquad
+ \bigl(B_0(a)\land B_1(b)\bigr)
+ \lor\bigl(B_1(a)\land B_0(b)\bigr).
+\]
+These identities hold on nonnegative integers with infinity.
+At leaves the tests are constants or selected-edge inputs.
+This turns tropical circuit depth \(d\) into monotone Boolean
+depth at most \(2d\). Identify the variables for each pair of
+opposite arcs to obtain undirected \(s\)-\(t\) connectivity.
+The Karchmer--Wigderson lower bound \cite{kw} gives depth
+\(\Omega(\log^2 N)=\Omega(\log^2 m)\) for the tropical circuit,
+where \(m\) is the number of input facts.
+
+For the upper bound, nonnegative weights permit removal of
+cycles from a shortest path between distinct vertices.
+For a positive-length shortest walk from a vertex to itself,
+one can retain a shortest simple cycle. In both cases, if a
+walk exists, some optimum uses at most \(N\) edges. Let \(A\)
+be the min-plus adjacency matrix and \(I\) the min-plus
+identity. Compute \(A(I\oplus A)^k\), with \(k\) a power of
+two at least \(N-1\), using repeated squaring. The first factor
+forces a real edge, preserving positive length even on the
+diagonal. Each product costs depth \(O(\log N)\) at fan-in
+two, and the number of products is \(O(\log N)\). Forming
+\(P\) from \(R\) adds constant depth. The active domain has
+\(O(m)\) vertices. With the standard path-doubling method
+\cite[Sec.~5]{fkr}, this proves the matching \(O(\log^2 m)\)
+upper bound. The worst-case depth claim is for this target
+and this circuit model. The general depth classification of
+Datalog remains a separate question.
+
+\section*{Verification and technical disclosure}
+The Python replay checks exact path costs for 200 lengths,
+all Boolean databases on one to three vertices, and finite
+controls for the circuit conversion and matrix formula.
+A partial Lean~4 certificate checks the worked path trace,
+the strict adjacent-cost comparison, two finite natural
+threshold identities, and a Boolean absorption identity.
+The general semantics and circuit lower bound are established
+in the written proof.
+
+Internally reviewed, not peer reviewed. Under human direction,
+ChatGPT Astra~6.2 (OpenAI) generated the discovery proof and
+research packet. OpenAI Codex independently checked the
+mathematics. GPT-6.2 Sol (OpenAI) checked the literature and
+prepared the manuscript, additional exact replay, partial Lean
+certificate and illustrations. DannyExperiments maintains the
+repository and is the preferred citation identity. No AI system
+is proposed as an author.
+
+\begin{thebibliography}{9}
+\raggedright
+\bibitem{fkr} A. Z. Fan, P. Koutris and S. Roy,
+\emph{Circuits and formulas for Datalog over semirings},
+Proc. ACM Manag. Data 3(2), PODS (2025), Art. 93.
+doi:10.1145/3725230.
+\bibitem{frisk} S. Frisk, S. Im, P. Koutris, B. Moseley,
+H. Q. Ngo, K. Pruhs and H. Zhao,
+\emph{Optimal convergence of iterative methods for Datalog},
+arXiv:2610.04062v1, 2026.
+\bibitem{kw} M. Karchmer and A. Wigderson,
+\emph{Monotone circuits for connectivity require super-logarithmic depth},
+SIAM J. Discrete Math. 3(2) (1990), 255--265.
+\end{thebibliography}
+\end{document}

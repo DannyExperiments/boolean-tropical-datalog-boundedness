@@ -1,0 +1,5 @@
+'TropicalRounds.depth_trace' does not depend on any axioms
+'TropicalRounds.later_stop_improves' depends on axioms: [propext, Quot.sound]
+'TropicalRounds.zero_test' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TropicalRounds.one_test' depends on axioms: [propext, Classical.choice, Quot.sound]
+'TropicalRounds.boolean_absorption' does not depend on any axioms

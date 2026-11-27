@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Tropical Datalog round explorer</title>
+<style>
+:root{font:16px/1.5 system-ui,sans-serif;color-scheme:dark;color:#eef7ff;background:#0b1523}
+*{box-sizing:border-box}body{margin:0}
+main{max-width:51rem;margin:auto;padding:1.4rem clamp(1rem,4vw,2rem)}
+h1{font-size:clamp(1.55rem,5vw,2.35rem);line-height:1.13;margin:0 0 .55rem}
+h2{font-size:1.05rem;margin:.2rem 0}
+p{color:#c0d4e6;margin:.45rem 0 .85rem}
+.controls{display:grid;gap:.6rem;margin:1rem 0}
+.controls label{display:flex;gap:.75rem;align-items:center;flex-wrap:wrap}
+input[type="range"]{flex:1;min-width:5rem;accent-color:#76dfc7}
+output{min-width:2ch;text-align:right;font-variant-numeric:tabular-nums}
+.panels{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:.75rem}
+article{background:#132338;border:1px solid #38516a;border-radius:.6rem;text-align:center;padding:.65rem}
+canvas{display:block;width:100%;height:auto;margin:auto}
+dl{margin:.5rem auto;display:grid;gap:.36rem}
+dt{font-weight:700}dd{margin:0;font-variant-numeric:tabular-nums}
+#numeric{font-size:1.5rem;color:#ffce79;font-weight:700}
+.result{border-left:4px solid #ffce79;padding:.65rem .75rem;background:#132338;margin-top:1rem}
+.result p{margin:0}
+:focus-visible{outline:2px solid #ffce79;outline-offset:3px}
+</style>
+</head>
+<body>
+<main>
+<h1>Longer tropical proofs cost less</h1>
+<p>Take a zero-weight path on vertices 0 through 4 with guard weights 81, 27, 9, 3, 1. Stopping uses the guard twice. Moving along one edge uses the guard once and exposes a cheaper stopping point.</p>
+<div class="controls">
+  <label for="round">Round <input id="round" type="range" min="0" max="6" value="2"><output id="roundNumber"></output></label>
+  <label for="angle">Rotate <input id="angle" type="range" min="7" max="45" value="24"></label>
+</div>
+<div class="panels">
+<article>
+  <h2>Tropical cost at T(0)</h2>
+  <canvas id="bars" width="490" height="270" aria-label="Bar chart of exact costs as rounds discover longer derivations"></canvas>
+  <p style="margin:.15rem 0">Evaluation round</p>
+</article>
+<article aria-live="polite">
+  <h2>Selected round</h2>
+  <dl><dt>Boolean T(0)</dt><dd id="truth"></dd><dt>Tropical T(0)</dt><dd id="numeric"></dd></dl>
+  <p id="stop"></p>
+</article>
+</div>
+<div class="result"><h2>One fixed program, many inputs</h2><p>The Boolean target is settled by round 2 on every input. The tropical target needs n + 2 rounds on the path family with n edges.</p></div>
+</main>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const weights=[0,1,2,3,4].map(j=>3**(4-j));
+const costs=weights.map((w,j)=>2*w+weights.slice(0,j).reduce((a,b)=>a+b,0));
+const ctx=$("bars").getContext("2d");
+
+function draw() {
+  const r=Number($("round").value), active=r-2;
+  const theta=Number($("angle").value)*Math.PI/180;
+  $("roundNumber").textContent=r;
+  $("truth").textContent=r>=2 ? "true" : "false";
+  $("numeric").textContent=r>=2 ? costs[active] : "∞";
+  $("stop").textContent=r>=2 ? "Stop at vertex "+active : "No proof tree yet";
+  ctx.clearRect(0,0,490,270);
+  const project=(x,y,z)=>[245+84*(x*Math.cos(theta)+z*Math.sin(theta)),
+    204-140*y+15*(-x*Math.sin(theta)+z*Math.cos(theta))];
+  function face(points,fill) {
+    ctx.beginPath();ctx.moveTo(...points[0]);
+    for(const p of points.slice(1)) ctx.lineTo(...p);
+    ctx.closePath();ctx.fillStyle=fill;ctx.fill();
+    ctx.strokeStyle="#0b1523";ctx.lineWidth=2;ctx.stroke();
+  }
+  for (let j=0;j<costs.length;j++) {
+    const x=j-2,y=costs[j]/costs[0];
+    const square=[[x-.32,-.31],[x+.32,-.31],[x+.32,.31],[x-.32,.31]];
+    const low=square.map(([u,v])=>project(u,0,v)), high=square.map(([u,v])=>project(u,y,v));
+    const tint=j===active ? ["#e09d58","#ffce79","#ffe4ab"] :
+      (j<active ? ["#418999","#65c7c2","#76dfc7"] : ["#2a455c","#365875","#496987"]);
+    face([low[3],low[2],high[2],high[3]],tint[0]);
+    face([low[0],low[3],high[3],high[0]],tint[1]);
+    face(high,tint[2]);
+    ctx.font="bold 23px system-ui";ctx.textAlign="center";ctx.fillStyle=j===active?"#ffce79":"#bfd3e5";
+    ctx.fillText(j+2,project(x,0,0)[0],250);
+  }
+}
+$("round").addEventListener("input",draw);
+$("angle").addEventListener("input",draw);
+draw();
+</script>
+</body>
+</html>

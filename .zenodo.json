@@ -1,0 +1,29 @@
+{
+  "title": "Boolean boundedness need not transfer to tropical Datalog",
+  "upload_type": "software",
+  "creators": [
+    {
+      "name": "DannyExperiments"
+    }
+  ],
+  "keywords": [
+    "Datalog",
+    "tropical semiring",
+    "Boolean boundedness",
+    "semiring provenance",
+    "monotone circuit depth"
+  ],
+  "description": "<p>A fixed three-rule monadic Datalog program stabilizes every intensional predicate in two Boolean rounds yet requires unboundedly many tropical rounds for its target. This answers the boundedness-transfer question of Fan, Koutris and Roy.</p><p>The short derivation uses one guard fact twice on separate branches. Boolean conjunction absorbs the duplication. Tropical multiplication adds both weights, so proceeding to a cheaper guard can improve the derivation. On a directed path with n edges, the strictly cheapest derivation first appears at round n + 2. A separate target-only example has constant Boolean circuit depth and square-logarithmic worst-case tropical depth over nonnegative integers. Its analysis uses integer threshold tests, the classical monotone connectivity lower bound and path doubling. The general Datalog depth classification remains open.</p><p>Internally reviewed, not peer reviewed. Exact Python replay tests paths, Boolean databases and matrix controls. Partial Lean checks the worked trace and auxiliary arithmetic. The paper gives the general proofs.</p><p>Under human direction, ChatGPT Astra 6.2 (OpenAI) generated the discovery proof and research packet. OpenAI Codex independently checked the mathematics. GPT-6.2 Sol (OpenAI) checked the literature and prepared the manuscript, additional exact replay, partial Lean certificate and illustrations. DannyExperiments is the preferred citation identity. No AI system is proposed as an author.</p><p>Release v1.0.0. https://github.com/DannyExperiments/boolean-tropical-datalog-boundedness/releases/tag/v1.0.0</p>",
+  "license": "other-closed",
+  "notes": "All rights reserved. Publicly downloadable files are supplied without a repository-wide reuse license.",
+  "publication_date": "2026-11-27",
+  "version": "1.0.0",
+  "access_right": "open",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/DannyExperiments/boolean-tropical-datalog-boundedness/releases/tag/v1.0.0",
+      "relation": "isSupplementTo",
+      "resource_type": "software"
+    }
+  ]
+}

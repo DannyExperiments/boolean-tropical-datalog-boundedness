@@ -1,0 +1,4 @@
+200 path families: exact first-attainment rounds and costs verified.
+4164 Boolean databases: all IDBs stabilize by round 2.
+25 tropical threshold gate cases verified.
+19683 weighted 3-vertex structures: positive-length doubling and threshold reduction verified.

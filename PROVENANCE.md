@@ -1,0 +1,3 @@
+# Provenance
+
+This release addresses Q1078 in the open problems catalog and the explicit transfer question of Fan, Koutris and Roy. The discovery packet supplied the guarded three-rule program and the target-only circuit comparison. The release reproduces the proofs and credits the classical connectivity and path-doubling arguments. It adds exact matrix controls, a partial Lean certificate and a worked explorer. [Catalog](https://github.com/10m-u/open-problems-catalog/blob/ca8d4d44ba3db527f19f28928c240168f545ecfe/problems/computer_science_ai/classical-statistical-machine-learning.md#q1078) · [Source](https://arxiv.org/pdf/2504.08914v1#page=10)
